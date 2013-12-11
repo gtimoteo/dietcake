@@ -15,7 +15,7 @@ class Thread extends AppModel{
 	//obtain all threads
 	public static function getAll(){
 		$threads = array();
-
+		
 		//connection to database
 		$db = DB::conn();
 		//select query using rows method of class DB
@@ -81,7 +81,42 @@ class Thread extends AppModel{
 		// write first comment at the same time
 		$this->write($comment);
 		$db->commit();
-}
+	}
+	
+	//inserts new user data to database
+	public function sign_up(User $user){
+		$user->validate();
+		if($user->hasError()){
+			throw new ValidationException('invalid username or password');
+		}
+		
+		$db = DB::conn();
+		$params = array(
+			"username" => $user->username,
+			"password" => md5($user->password)
+		);
+		$db->insert("user", $params);
+	}
+	
+	public function userExists($username){
+		$db = DB::conn();
+		$result = $db->value(
+			"SELECT COUNT(*) FROM user WHERE username = ?",
+			array($username)
+		);
+		
+		return $result;
+	}
+	
+	public static function sign_in($username, $password){
+		$db = DB::conn();
+		$result = $db->value(
+			"SELECT COUNT(*) FROM user WHERE username = ? AND password = ?",
+			array($username, md5($password))
+		);
+		
+		return $result;
+	}
 
 }//end of Thread class
 

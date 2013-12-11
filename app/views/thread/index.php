@@ -1,15 +1,35 @@
-<!-- #########  VIEW  ######### -->
-<h1>All threads</h1>
-
-<ul>
-	<!--obtains all comments from db by looping through thread variable-->
-	<?php foreach($threads as $v): ?>
-		<li>
-			<a href="<?php eh(url('thread/view', array('thread_id' => $v->id))) ?>">
-				<?php eh($v->title) ?>
-			</a>
-		</li>
-	<?php endforeach ?>
-</ul>
-
-<a class="btn btn-large btn-primary" href="<?php eh(url('thread/create')) ?>">Create</a>
+<div class="row-fluid">
+	<div class="span6">
+		<h1>Sign in</h1>
+		
+		<?php if (isset($isEmptyTextbox)): ?>
+			<div class="alert alert-block">
+				<h4 class="alert-heading">Sign in Error!</h4>
+				<div><em>Username<em> or </em>Password</em> is empty.</div>
+				<div>Please try again.</div>
+			</div>
+		<?php endif ?>
+		<?php if (isset($invalidAccountError)): ?>
+			<div class="alert alert-block">
+				<h4 class="alert-heading">Sign in Error!</h4>
+				<div>Invalid <em>Username<em> or </em>Password.</em></div>
+				<div>Please try again.</div>
+			</div>
+		<?php endif ?>
+		
+		<hr/>
+		<form action="<?php eh(url('thread/index')) ?>" method="POST">
+			<label>Username</label>
+			<input type="text" name="username"/>
+			<br/>
+			<label>Password</label>
+			<input type="password" name="password"/>
+			<input type="hidden" name="page_next" value="index_end"/>
+			<br/>
+			<button type="submit" class="btn btn-primary" name="submit">Sign in</button>
+		</form>
+		
+		Dont' have an account yet? Register 
+		<a href="<?php eh(url('thread/sign_up')) ?>">here</a>
+	</div>
+</div>

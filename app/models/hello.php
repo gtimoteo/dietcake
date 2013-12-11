@@ -1,3 +1,5 @@
+<!-- MODEL -->
+
 <?php
 class Hello extends AppModel
 {

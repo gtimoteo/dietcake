@@ -1,3 +1,5 @@
+<!-- CONTROLLER -->
+
 <?php
 class HelloController extends AppController
 {

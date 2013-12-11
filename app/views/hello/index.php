@@ -1,3 +1,5 @@
+<!-- VIEW -->
+
 <?php $title = 'Hello' ?>
 
 <h1><?php eh($message) ?></h1>
