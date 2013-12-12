@@ -1,7 +1,8 @@
 <div class="row-fluid">
 	<div class="span6">
 		<h1>Sign in</h1>
-		
+		<hr/>
+        
 		<?php if (isset($check_textbox)): ?>
 			<div class="alert alert-block">
 				<h4 class="alert-heading">Sign in Error!</h4>
@@ -17,7 +18,7 @@
 			</div>
 		<?php endif ?>
 		
-		<hr/>
+		
 		<form action="" method="POST">
 			<label>Username</label>
 			<input type="text" name="username"/>

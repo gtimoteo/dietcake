@@ -20,6 +20,18 @@
 	</div>	
 <?php endif ?>
 
+<?php if (isset($is_textbox_empty)): ?>
+    <div class="alert alert-block">
+        <h4 class="alert-heading">Validation error!</h4>
+        <?php if(strlen($username) == 0): ?>
+            <div>Please enter <em>Username</em>.</div>
+        <?php endif ?>
+        <?php if(strlen($password) == 0): ?>
+            <div>Please enter <em>Password</em>.</div>
+        <?php endif ?>
+    </div>
+<?php endif ?>
+
 <?php if (isset($password_mismatched)): ?>
 	<div class="alert alert-block">
 		<h4 class="alert-heading">Registration Error!</h4>

@@ -34,7 +34,7 @@
         </div>
 		<hr>
         
-		<form class="well" method="post" action="<?php eh(url('thread/view')) ?>">
+		<form class="well" method="post" action="<?php eh(url('thread/write')) ?>">
 			<label>Comment:</label>
 			<textarea name="body"><?php eh(Param::get('body')) ?></textarea>
 			<br />
