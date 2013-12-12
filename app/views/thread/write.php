@@ -12,6 +12,23 @@
 			</div>
 		<?php endforeach ?>
 		
+        <div class="pagination">
+            <ul>
+                <li>
+                    <?php $first = $page == 1 ? 1 : $page-1 ?>
+                    <a href="<?php eh(url('thread/view', array('thread_id' => $thread_id, 'page' => $first))) ?>">Prev</a>
+                </li>
+                <?php for($i = 1; $i <= $number_of_pages; $i++): ?>
+                    <li class="<?php $current_page == $i ? eh("disabled") : "active" ?>">
+                        <a href="<?php eh(url('thread/view', array('thread_id' => $thread_id, 'page' => $i))) ?>"><?php eh($i) ?></a>
+                    </li>
+                <?php endfor ?>
+                <li>
+                    <?php $last = $next_page == $number_of_pages ? $number_of_pages : $next_page+1 ?>
+                    <a href="<?php eh(url('thread/view', array('thread_id' => $thread_id, 'page' => $last))) ?>">Next</a>
+                </li>
+            </ul>
+        </div>
 		
 		<?php if ($comment->hasError()): ?>
 			<div class="alert alert-block">
@@ -46,7 +63,13 @@
 </div>
 
 <div>
-<a href="<?php eh(url('thread/threads')) ?>">
+<a href="<?php eh(url('thread/threads', array('page' => 1))) ?>">
 	<button class="btn btn-small btn-primary">Go back to threads</button>
 </a>
+</div>
+
+
+
+<div>
+	<?php eh($p); ?>
 </div>

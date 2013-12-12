@@ -1,8 +1,9 @@
 <!-- #########  MODEL  ######### -->
 <?php
-
-class Thread extends AppModel{
-
+class Thread extends AppModel{   
+    
+    const MAX_THREADS = 5;
+    const MAX_COMMENTS = 5;
 	//validation for title
 	public $validation = array(
 		'title' => array(
@@ -98,7 +99,7 @@ class Thread extends AppModel{
 		$db->insert("user", $params);
 	}
 	
-	public function userExists($username){
+	public function isUserExisting($username){
 		$db = DB::conn();
 		$result = $db->value(
 			"SELECT COUNT(*) FROM user WHERE username = ?",
@@ -108,7 +109,7 @@ class Thread extends AppModel{
 		return $result;
 	}
 	
-	public static function sign_in($username, $password){
+	public static function signIn($username, $password){
 		$db = DB::conn();
 		$result = $db->value(
 			"SELECT COUNT(*) FROM user WHERE username = ? AND password = ?",
@@ -117,7 +118,58 @@ class Thread extends AppModel{
 		
 		return $result;
 	}
+    
+    //get total number of threads pages
+    public static function getNumberOfPages(){
+        $threads = Thread::getAll();
+        return ceil(count($threads) / THREAD::MAX_THREADS);
+    }
 
+    //get 5 threads for threads pagination
+    public static function getThreads($page){
+		$threads = array();
+		
+		//connection to database
+		$db = DB::conn();
+		//select query using rows method of class DB
+		$rows = $db->rows('SELECT * FROM thread');
+		//loops to the result set
+        $len = count($rows);
+        $max_threads = Thread::MAX_THREADS;
+        $start = ($page * $max_threads) - $max_threads;
+        $end = $start + $max_threads;
+        for($start; $start < $end AND $start < $len; $start++){
+            $threads[] = new Thread($rows[$start]);
+            
+        }
+		return $threads;
+	}
+    
+    //get total number of comments pages
+    public static function getNumberOfComments(Thread $thread){
+        $comments = $thread->getComments();
+        return ceil(count($comments) / Thread::MAX_COMMENTS);
+    }
+    
+    //get 5 comments for comments pagination
+    public static function getSomeComments($page, $thread_id){
+        $comments = array();
+        
+        $db = DB::conn();
+        $rows = $db->rows(
+            "SELECT * FROM comment WHERE thread_id = ?",
+            array($thread_id)
+        );
+        
+        $len = count($rows);
+        $max_comments = Thread::MAX_COMMENTS;
+        $start = ($page * $max_comments) - $max_comments;
+        $end = $start + $max_comments;
+        for($start; $start < $end AND $start < $len; $start++){
+            $comments[] = new Comment($rows[$start]);
+        }
+        return $comments;
+    }
 }//end of Thread class
 
 ?>

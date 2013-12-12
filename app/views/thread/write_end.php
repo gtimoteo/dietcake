@@ -3,6 +3,6 @@
 <p class="alert alert-success">
 	You successfully wrote this comment.
 </p>
-<a href="<?php eh(url('thread/view', array('thread_id' => $thread->id))) ?>">
+<a href="<?php eh(url('thread/view', array('thread_id' => $thread->id, 'page' => $number_of_pages))) ?>">
 	&larr; Back to thread
 </a>

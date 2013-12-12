@@ -20,7 +20,7 @@
 	</div>	
 <?php endif ?>
 
-<?php if (isset($password_mismatched_error)): ?>
+<?php if (isset($password_mismatched)): ?>
 	<div class="alert alert-block">
 		<h4 class="alert-heading">Registration Error!</h4>
 		<div><em>Password</em> did not matched</div>

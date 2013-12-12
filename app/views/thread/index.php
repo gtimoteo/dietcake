@@ -2,14 +2,14 @@
 	<div class="span6">
 		<h1>Sign in</h1>
 		
-		<?php if (isset($isEmptyTextbox)): ?>
+		<?php if (isset($check_textbox)): ?>
 			<div class="alert alert-block">
 				<h4 class="alert-heading">Sign in Error!</h4>
 				<div><em>Username<em> or </em>Password</em> is empty.</div>
 				<div>Please try again.</div>
 			</div>
 		<?php endif ?>
-		<?php if (isset($invalidAccountError)): ?>
+		<?php if (isset($invalid_account)): ?>
 			<div class="alert alert-block">
 				<h4 class="alert-heading">Sign in Error!</h4>
 				<div>Invalid <em>Username<em> or </em>Password.</em></div>
@@ -18,7 +18,7 @@
 		<?php endif ?>
 		
 		<hr/>
-		<form action="<?php eh(url('thread/index')) ?>" method="POST">
+		<form action="" method="POST">
 			<label>Username</label>
 			<input type="text" name="username"/>
 			<br/>

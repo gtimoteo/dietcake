@@ -5,4 +5,10 @@ function validate_between($check, $min, $max){
 	return $min <= $n && $n <= $max;
 }
 
+function check_session(){
+	if (!isset($_SESSION['username'])){
+        header("Location: /thread/index");
+        die();
+	}
+}
 ?>
