@@ -30,7 +30,7 @@ class Thread extends AppModel{
 		return $threads;
 	}
 
-	//display a thread selected by a query parameter and comments on the thread
+	//display a thread selected by a query parameter and comments in the thread
 	public static function get($id){
 		$db = DB::conn();
 		$row = $db->row('SELECT * FROM thread WHERE id = ?', array($id));
@@ -99,6 +99,7 @@ class Thread extends AppModel{
 		$db->insert("user", $params);
 	}
 	
+    //checks if account/username exists in table user
 	public function isUserExisting($username){
 		$db = DB::conn();
 		$result = $db->value(
@@ -109,13 +110,13 @@ class Thread extends AppModel{
 		return $result;
 	}
 	
+    //sign in validation
 	public static function signIn($username, $password){
 		$db = DB::conn();
 		$result = $db->value(
 			"SELECT COUNT(*) FROM user WHERE username = ? AND password = ?",
 			array($username, md5($password))
-		);
-		
+		);	
 		return $result;
 	}
     

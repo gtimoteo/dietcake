@@ -34,6 +34,11 @@ class ThreadController extends AppController{
                         $next_page = 1;
                         $current_page = 1;
                         $threads = Thread::getThreads(1);
+                        //$threads = Thread::getThreads($page);
+                        $comments = array();
+                        foreach($threads as $v){
+                            $comments[$v->id] = count($v->getComments());
+                        }
                         $page = 'threads';
 					}else{
 						$invalid_account = TRUE;
@@ -42,7 +47,6 @@ class ThreadController extends AppController{
 				}
 		}
 	    $this->set(get_defined_vars());
-		//header("location: /thread/{$page}");
         $this->render($page);
 	}
 
