@@ -1,6 +1,7 @@
 <!-- #########  MODEL  ######### -->
 <?php
-class Thread extends AppModel{   
+class Thread extends AppModel
+{   
     
     const MAX_THREADS = 5;
     const MAX_COMMENTS = 5;
@@ -14,7 +15,8 @@ class Thread extends AppModel{
 	);
 	
 	//obtain all threads
-	public static function getAll(){
+	public static function getAll()
+    {
 		$threads = array();
 		
 		//connection to database
@@ -22,16 +24,17 @@ class Thread extends AppModel{
 		//select query using rows method of class DB
 		$rows = $db->rows('SELECT * FROM thread');
 		//loops to the result set
-		foreach ($rows as $row) {
+		foreach ($rows as $v) {
 			//add element(comment) to variable thread
-			$threads[] = new Thread($row);
+			$threads[] = new Thread($v);
 		}
 
 		return $threads;
 	}
 
 	//display a thread selected by a query parameter and comments in the thread
-	public static function get($id){
+	public static function get($id)
+    {
 		$db = DB::conn();
 		$row = $db->row('SELECT * FROM thread WHERE id = ?', array($id));
 		return new self($row);
@@ -46,8 +49,8 @@ class Thread extends AppModel{
 				'SELECT * FROM comment WHERE thread_id = ? ORDER BY created ASC',
 				array($this->id)
 			);
-		foreach ($rows as $row) {
-			$comments[] = new Comment($row);
+		foreach ($rows as $v) {
+			$comments[] = new Comment($v);
 		}
 		return $comments;
 	}
@@ -55,7 +58,8 @@ class Thread extends AppModel{
 	// insert comments to database
 	// create a comment object and access its members 
 	// as parameters in inserting data to database
-	public function write(Comment $comment){
+	public function write(Comment $comment)
+    {
 		if (!$comment->validate()) {
 			throw new ValidationException('invalid comment');
 		}
@@ -70,7 +74,8 @@ class Thread extends AppModel{
 	}
 	
 	//creates a new threads
-	public function create(Comment $comment){
+	public function create(Comment $comment)
+    {
 		$this->validate();
 		$comment->validate();
 		if ($this->hasError() || $comment->hasError()) {
@@ -87,9 +92,10 @@ class Thread extends AppModel{
 	}
 	
 	//inserts new user data to database
-	public function sign_up(User $user){
+	public function sign_up(User $user)
+    {
 		$user->validate();
-		if($user->hasError()){
+		if ($user->hasError()) {
 			throw new ValidationException('invalid username or password');
 		}
 		
@@ -102,7 +108,8 @@ class Thread extends AppModel{
 	}
 	
     //checks if account/username exists in table user
-	public function isUserExisting($username){
+	public function isUserExisting($username)
+    {
 		$db = DB::conn();
 		$result = $db->value(
 			"SELECT COUNT(*) FROM user WHERE username = ?",
@@ -113,7 +120,8 @@ class Thread extends AppModel{
 	}
 	
     //sign in validation
-	public static function signIn($username, $password){
+	public static function signIn($username, $password)
+    {
 		$db = DB::conn();
 		$result = $db->value(
 			"SELECT COUNT(*) FROM user WHERE username = ? AND password = ?",
@@ -123,13 +131,15 @@ class Thread extends AppModel{
 	}
     
     //get total number of threads pages
-    public static function getNumberOfPages(){
+    public static function getNumberOfPages()
+    {
         $threads = Thread::getAll();
         return ceil(count($threads) / THREAD::MAX_THREADS);
     }
 
     //get 5 threads for threads pagination
-    public static function getThreads($page){
+    public static function getThreads($page)
+    {
 		$threads = array();
 		
 		//connection to database
@@ -141,7 +151,7 @@ class Thread extends AppModel{
         $max_threads = Thread::MAX_THREADS;
         $start = ($page * $max_threads) - $max_threads;
         $end = $start + $max_threads;
-        for($start; $start < $end AND $start < $len; $start++){
+        for ($start; $start < $end AND $start < $len; $start++) {
             $threads[] = new Thread($rows[$start]);
             
         }
@@ -149,13 +159,15 @@ class Thread extends AppModel{
 	}
     
     //get total number of comments pages
-    public static function getNumberOfComments(Thread $thread){
+    public static function getNumberOfComments(Thread $thread)
+    {
         $comments = $thread->getComments();
         return ceil(count($comments) / Thread::MAX_COMMENTS);
     }
     
     //get 5 comments for comments pagination
-    public static function getSomeComments($page, $thread_id){
+    public static function getSomeComments($page, $thread_id)
+    {
         $comments = array();
         
         $db = DB::conn();

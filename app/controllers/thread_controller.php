@@ -2,56 +2,59 @@
 
 <?php
 
-class ValidationException extends AppException{
-
+class ValidationException extends AppException
+{
 }
 
-class ThreadController extends AppController{
+class ThreadController extends AppController
+{
 
-	public function index(){
+	public function index()
+    {
 		$username = Param::get('username');
 		$password = Param::get('password');
 		$page = Param::get('page_next', 'index');
 		
-		switch($page){
-			case 'index':
-				if (isset($_SESSION['username'])){
+		switch ($page) {
+        case 'index':
+            if (isset($_SESSION['username'])) {
+                $number_of_pages = Thread::getNumberOfPages();
+                $next_page = 1;
+                $current_page = 1;
+                $threads = Thread::getThreads(1);
+                $page = 'threads';
+            }
+            break;
+        case 'index_end':
+            if (strlen($username) == 0 || strlen($password) == 0) {
+                $check_textbox = TRUE;
+                $page = 'index';
+            } else {
+                if (Thread::signIn($username, $password)) {
+                    $_SESSION['username'] = $username;
                     $number_of_pages = Thread::getNumberOfPages();
                     $next_page = 1;
                     $current_page = 1;
                     $threads = Thread::getThreads(1);
-					$page = 'threads';
-				}
-				break;
-			case 'index_end':
-				if (strlen($username) == 0 || strlen($password) == 0){
-					$check_textbox = TRUE;
-					$page = 'index';
-				}else{
-					if(Thread::signIn($username, $password)){
-						$_SESSION['username'] = $username;
-						$number_of_pages = Thread::getNumberOfPages();
-                        $next_page = 1;
-                        $current_page = 1;
-                        $threads = Thread::getThreads(1);
-                        //$threads = Thread::getThreads($page);
-                        $comments = array();
-                        foreach($threads as $v){
-                            $comments[$v->id] = count($v->getComments());
-                        }
-                        $page = 'threads';
-					}else{
-						$invalid_account = TRUE;
-						$page = 'index';
-					}
-				}
+                    //$threads = Thread::getThreads($page);
+                    $comments = array();
+                    foreach($threads as $v){
+                        $comments[$v->id] = count($v->getComments());
+                    }
+                    $page = 'threads';
+                } else {
+                    $invalid_account = TRUE;
+                    $page = 'index';
+                }
+            }
 		}
 	    $this->set(get_defined_vars());
         $this->render($page);
 	}
     
 
-	public function threads(){
+	public function threads()
+    {
         check_session();
 		// TODO: Get all threads
 		// obtain comments by accessing 
@@ -62,14 +65,15 @@ class ThreadController extends AppController{
         $number_of_pages = Thread::getNumberOfPages();
         $threads = Thread::getThreads($page);
         $comments = array();
-        foreach($threads as $v){
+        foreach ($threads as $v) {
             $comments[$v->id] = count($v->getComments());
         }
 		$this->set(get_defined_vars());
 	}
 
 	//view.php
-	public function view(){
+	public function view()
+    {
         check_session();
         $thread_id = Param::get('thread_id');
         $page = Param::get('page');
@@ -87,7 +91,8 @@ class ThreadController extends AppController{
 	}
 	
 	// write.php
-	public function write(){
+	public function write()
+    {
         check_session();
         
         $p = Param::get('page');
@@ -106,26 +111,27 @@ class ThreadController extends AppController{
 		$page = Param::get('page_next', 'write');
 			
 		switch ($page) {
-			case 'write':
-				break;
-			case 'write_end':
-				$comment->username = $_SESSION['username'];
-				$comment->body = Param::get('body');
-				try{
-					$thread->write($comment);
-				}catch(ValidationException $e){
-					$page = 'write';
-				}
-				break;
-			default:
-				throw new NotFoundException("{$page} is not found");
+        case 'write':
+            break;
+        case 'write_end':
+            $comment->username = $_SESSION['username'];
+            $comment->body = Param::get('body');
+            try {
+                $thread->write($comment);
+            } catch (ValidationException $e) {
+                $page = 'write';
+            }
+            break;
+        default:
+            throw new NotFoundException("{$page} is not found");
 		}
 		$this->set(get_defined_vars());
 		$this->render($page);
 	}
 	
 	//register a new user
-	public function sign_up(){
+	public function sign_up()
+    {
 		$user = new User;
 		$page = Param::get('page_next', 'sign_up');
 		$thread = new Thread;
@@ -134,68 +140,70 @@ class ThreadController extends AppController{
 		$password = Param::get('password');
 		$retype_password = Param::get('retype_password');
 		
-		switch($page){
-			case 'sign_up':
-				break;
-			case 'sign_up_end':	
-                if ($password != $retype_password){
-					$password_mismatched = TRUE;
-					$page = 'sign_up';
-				}else if (strlen($username) == 0 || strlen($password) == 0 || strlen($retype_password) == 0){
-                    $is_textbox_empty = TRUE;
+		switch ($page) {
+        case 'sign_up':
+            break;
+        case 'sign_up_end':	
+            if ($password !== $retype_password){
+                $password_mismatched = TRUE;
+                $page = 'sign_up';
+            } elseif (strlen($username) == 0 || strlen($password) == 0 || strlen($retype_password) == 0) {
+                $is_textbox_empty = TRUE;
+                $page = 'sign_up';
+            } else {
+                $user_exists = $thread->isUserExisting($username);
+                if ($user_exists == 1) {
+                    $user_exists_error = TRUE;	
                     $page = 'sign_up';
-                }else{
-					$user_exists = $thread->isUserExisting($username);
-					if ($user_exists == 1){
-						$user_exists_error = TRUE;	
-						$page = 'sign_up';
-					}else{
-						$user->username = $username;
-						$user->password =  $password;
-						$user->retype_password = $retype_password;
-					
-						$_SESSION['username'] = $username;
-						try{
-							$thread->sign_up($user);
-						}catch(ValidationException $e){
-							$page = 'sign_up';
-						}
-					}	
-				}
-				break;
-			default:
-				throw new NotFoundException("{$page} is not found");
+                } else {
+                    $user->username = $username;
+                    $user->password =  $password;
+                    $user->retype_password = $retype_password;
+                
+                    $_SESSION['username'] = $username;
+                    try {
+                        $thread->sign_up($user);
+                    } catch (ValidationException $e) {
+                        $page = 'sign_up';
+                    }
+                }	
+            }
+            break;
+        default:
+            throw new NotFoundException("{$page} is not found");
 		}
 		$this->set(get_defined_vars());
 		$this->render($page);
 	}
 	
-	public function create(){
+	public function create()
+    {
         check_session();
 		$thread = new Thread;
 		$comment = new Comment;
 		$page = Param::get('page_next', 'create');
 		switch ($page) {
-			case 'create':
-				break;
-			case 'create_end':
-				$thread->title = Param::get('title');
-				$comment->username = $_SESSION['username'];
-				$comment->body = Param::get('body');
-				try {
-					$thread->create($comment);
-				} catch (ValidationException $e) {
-					$page = 'create';
-				}
-				break;
-			default:
-				throw new NotFoundException("{$page} is not found");
+        case 'create':
+            break;
+        case 'create_end':
+            $thread->title = Param::get('title');
+            $comment->username = $_SESSION['username'];
+            $comment->body = Param::get('body');
+            try {
+                $thread->create($comment);
+            } catch (ValidationException $e) {
+                $page = 'create';
+            }
+            break;
+        default:
+            throw new NotFoundException("{$page} is not found");
 		}
 		$this->set(get_defined_vars());
 		$this->render($page);
 	}
 	
-	public function logout(){
+	public function logout()
+    {
 		session_destroy();
         header("Location: /thread/index");
 	}
