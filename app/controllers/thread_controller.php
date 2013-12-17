@@ -34,6 +34,11 @@ class ThreadController extends AppController{
                         $next_page = 1;
                         $current_page = 1;
                         $threads = Thread::getThreads(1);
+                        //$threads = Thread::getThreads($page);
+                        $comments = array();
+                        foreach($threads as $v){
+                            $comments[$v->id] = count($v->getComments());
+                        }
                         $page = 'threads';
 					}else{
 						$invalid_account = TRUE;
@@ -42,9 +47,9 @@ class ThreadController extends AppController{
 				}
 		}
 	    $this->set(get_defined_vars());
-		//header("location: /thread/{$page}");
         $this->render($page);
 	}
+    
 
 	public function threads(){
         check_session();
@@ -55,7 +60,11 @@ class ThreadController extends AppController{
         $next_page = $page;
         $current_page = $page;
         $number_of_pages = Thread::getNumberOfPages();
-        $threads = Thread::getThreads($page);        
+        $threads = Thread::getThreads($page);
+        $comments = array();
+        foreach($threads as $v){
+            $comments[$v->id] = count($v->getComments());
+        }
 		$this->set(get_defined_vars());
 	}
 
@@ -80,16 +89,17 @@ class ThreadController extends AppController{
 	// write.php
 	public function write(){
         check_session();
-        $thread_id = Param::get('thread_id');
+        
         $p = Param::get('page');
-        
-		$thread = Thread::get(Param::get('thread_id'));
-        $comment = new Comment;
-        
         $next_page = $p;
         $current_page = $p;
         $item_num = (($p * Thread::MAX_COMMENTS) - Thread::MAX_COMMENTS) + 1;
         
+		$thread = Thread::get(Param::get('thread_id'));
+        $comment = new Comment;
+        
+        $thread_id = Param::get('thread_id');
+        $number_of_pages = Thread::getNumberOfComments($thread);
 		//$comments = $thread->getComments();     
         $comments = Thread::getSomeComments($p, $thread_id);        
         
@@ -116,11 +126,10 @@ class ThreadController extends AppController{
 	
 	//register a new user
 	public function sign_up(){
-        check_session();
-		$thread = new Thread;
 		$user = new User;
 		$page = Param::get('page_next', 'sign_up');
-		
+		$thread = new Thread;
+        
 		$username = Param::get('username');
 		$password = Param::get('password');
 		$retype_password = Param::get('retype_password');
@@ -128,11 +137,14 @@ class ThreadController extends AppController{
 		switch($page){
 			case 'sign_up':
 				break;
-			case 'sign_up_end':		
-				if ($password != $retype_password){
+			case 'sign_up_end':	
+                if ($password != $retype_password){
 					$password_mismatched = TRUE;
 					$page = 'sign_up';
-				}else{
+				}else if (strlen($username) == 0 || strlen($password) == 0 || strlen($retype_password) == 0){
+                    $is_textbox_empty = TRUE;
+                    $page = 'sign_up';
+                }else{
 					$user_exists = $thread->isUserExisting($username);
 					if ($user_exists == 1){
 						$user_exists_error = TRUE;	

@@ -2,21 +2,27 @@
 
 
 <div class="row fluid">	
-	<div class="span6">
+	<div class="span8">
 		<h1>All threads</h1>        
         <span class="label label-info" style="font-size:110%"><?php eh($current_page) ?> of <?php eh($number_of_pages) ?> pages</span>
-		<ul>
 		<!--obtains all comments from db by looping through thread variable-->
-        <div style="height:90px;">
-			<?php foreach($threads as $v): ?>
-				<li>
-					<a href="<?php eh(url('thread/view', array('thread_id' => $v->id, 'page' => 1))) ?>">
-							<?php eh($v->title) ?>
-					</a>
-				</li>
-			<?php endforeach; ?>
+        <div style="height:210px;">
+            <table class="table table-hover" style="width:410px;">
+                <thead><th>Title</th><th>No. of Comments</th></thead>
+                <?php foreach($threads as $v): ?>
+                    <tr>
+                        <td style="width:250px;">
+                        <a href="<?php eh(url('thread/view', array('thread_id' => $v->id, 'page' => 1))) ?>">
+                                <?php eh($v->title) ?>
+                        </a>
+                        </td>
+                        <td>
+                        <?php eh($comments[$v->id]) ?> comments
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            </table>
         </div>
-		</ul>
         <div class="pagination">
               <ul>
                 <li>
@@ -36,7 +42,7 @@
             </div>
 		<a class="btn btn-large btn-primary" href="<?php eh(url('thread/create')) ?>">Create</a>
 	</div>
-	<div class="span6">
+	<div class="span4">
 		<h4>
 			<span class="label label-default" style="font-size:140%;"> Welcome, <?php echo $_SESSION['username']; ?>! </span>
 		</h4>

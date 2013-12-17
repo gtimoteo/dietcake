@@ -4,6 +4,6 @@
 	You successfully created.
 </p>
 
-<a href="<?php eh(url('thread/view', array('thread_id' => $thread->id))) ?>">
+<a href="<?php eh(url('thread/view', array('thread_id' => $thread->id, 'page' => 1))) ?>">
 	&larr; Go to thread
 </a> 
